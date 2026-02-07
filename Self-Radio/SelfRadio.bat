@@ -115,42 +115,4 @@ EXIT /B
 
 :: ---------- Self update helper ----------
 :SelfUpdate
-cls
-echo ==== Update script ====
-echo This will download the latest version of this script from GitHub.
-set /p CONFIRM=Download and install update now? [y/N]:
-if /I NOT "%CONFIRM%"=="y" goto :MainMenu
-
-set "UPDATE_URL=https://raw.githubusercontent.com/SynthwaveFox/batch-scripts/refs/heads/main/Self-Radio/SelfRadio.bat"
-set "NEWFILE=%TEMP%\SelfRadio_new.bat"
-set "UPDATER=%TEMP%\SelfRadio_updater.bat"
-
-echo Downloading latest version...
-powershell -NoProfile -Command ^
-    "try { (New-Object System.Net.WebClient).DownloadFile('%UPDATE_URL%', '%NEWFILE%'); exit 0 } catch { exit 1 }"
-
-if errorlevel 1 (
-    echo Download failed.
-    pause
-    goto :MainMenu
-)
-
-REM Build the updater helper. Note: %% used so the helper receives %1 at runtime.
-(
-    echo @echo off
-    echo rem small delay so parent can exit
-    echo rem try timeout first, fallback to ping
-    echo timeout /t 2 /nobreak >nul 2^>nul || ping -n 3 127.0.0.1 ^>nul
-    echo rem Attempt to move downloaded file over the original script (argument passed as %%1)
-    echo if exist "%NEWFILE%" move /Y "%NEWFILE%" "%%~1" ^>nul 2^>nul
-    echo rem Launch the new script
-    echo start "" "%%~1"
-    echo rem try to delete this updater helper
-    echo del "%%~f0" ^>nul 2^>nul
-) > "%UPDATER%"
-
-REM Launch the updater and pass this script's full path as the argument
-start "" "%UPDATER%" "%~f0"
-
-echo Update started. Restarting with latest version...
-exit /B
+call "%~dp0Update-SelfRadio.bat"
