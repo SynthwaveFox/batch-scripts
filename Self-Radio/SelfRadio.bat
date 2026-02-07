@@ -115,4 +115,4 @@ EXIT /B
 
 :: ---------- Self update helper ----------
 :SelfUpdate
-call "%~dp0Update-SelfRadio.bat"
+call "%~dp0UpdateScript.bat"
